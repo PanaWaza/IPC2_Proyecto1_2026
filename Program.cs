@@ -17,57 +17,68 @@ class Program
             "   *R"
         };
 
-        MatrizOrtogonal malla = new MatrizOrtogonal(4, 5);
+        Ciudad ciudad = new Ciudad("CiudadPrueba", 4, 5);
         for (int i = 0; i < filasTexto.Length; i++)
         {
-            malla.AgregarFila(filasTexto[i], i);
+            ciudad.Malla.AgregarFila(filasTexto[i], i);
         }
+        ciudad.Malla.AsignarUnidadMilitar(1, 4, 20);
+        ciudad.EscanearCeldasEspeciales();
 
-        // Colocamos una unidad militar de capacidad 20 en el único hueco (fila 1, columna 4)
-        malla.AsignarUnidadMilitar(1, 4, 20);
+        Celda entrada = ciudad.Malla.ObtenerCelda(0, 0);
+        Celda civil   = (Celda)ciudad.ObtenerCiviles().obtenerporindice(0);
+        Celda recurso = (Celda)ciudad.ObtenerRecursos().obtenerporindice(0);
 
-        Celda entrada = malla.ObtenerCelda(0, 0);
-        Celda civil   = malla.ObtenerCelda(2, 4);
-        Celda recurso = malla.ObtenerCelda(3, 4);
+        Console.WriteLine("Civiles encontrados por EscanearCeldasEspeciales: " + ciudad.ObtenerCiviles().obtenertamano());
+        Console.WriteLine("Recursos encontrados por EscanearCeldasEspeciales: " + ciudad.ObtenerRecursos().obtenertamano());
+        Console.WriteLine("Civil en: (" + civil.Fila + "," + civil.Columna + ")");
+        Console.WriteLine("Recurso en: (" + recurso.Fila + "," + recurso.Columna + ")");
+        Console.WriteLine();
 
-        Console.WriteLine("=== CASO 1: ChapinRescue busca al civil (14,19 en el mundo real) ===");
-        NodoRuta resultadoRescate = BuscadorRutas.BuscarRuta(malla, entrada, civil, esRescate: true, capacidadCombate: 0);
-        MostrarResultado(resultadoRescate, "Mision Imposible: la unidad militar bloquea el unico paso y ChapinRescue no puede combatir");
+        Robot rescue = new ChapinRescue("R-01", 0, 0);
+        Robot fighterDebil = new ChapinFighter("F-01", 0, 0, 15);
+        Robot fighterFuerte = new ChapinFighter("F-02", 0, 0, 100);
+
+        Console.WriteLine("=== MISION 1: Rescate con ChapinRescue ===");
+        Mision mision1 = new Mision(TipoMision.Rescate, ciudad, rescue, entrada, civil);
+        mision1.Ejecutar();
+        MostrarMision(mision1);
 
         Console.WriteLine();
-        Console.WriteLine("=== CASO 2: ChapinFighter (capacidad 15) busca el recurso, NO alcanza a vencer a la unidad (cap 20) ===");
-        NodoRuta resultadoFighterDebil = BuscadorRutas.BuscarRuta(malla, entrada, recurso, esRescate: false, capacidadCombate: 15);
-        MostrarResultado(resultadoFighterDebil, "Mision Imposible: capacidad insuficiente (15 <= 20)");
+        Console.WriteLine("=== MISION 2: Extraccion con ChapinFighter debil (cap 15) ===");
+        Mision mision2 = new Mision(TipoMision.Extraccion, ciudad, fighterDebil, entrada, recurso);
+        mision2.Ejecutar();
+        MostrarMision(mision2);
 
         Console.WriteLine();
-        Console.WriteLine("=== CASO 3: ChapinFighter (capacidad 100) busca el recurso, SI alcanza a vencer a la unidad (cap 20) ===");
-        NodoRuta resultadoFighterFuerte = BuscadorRutas.BuscarRuta(malla, entrada, recurso, esRescate: false, capacidadCombate: 100);
-        MostrarResultado(resultadoFighterFuerte, "No debio fallar");
+        Console.WriteLine("=== MISION 3: Extraccion con ChapinFighter fuerte (cap 100) ===");
+        Mision mision3 = new Mision(TipoMision.Extraccion, ciudad, fighterFuerte, entrada, recurso);
+        mision3.Ejecutar();
+        MostrarMision(mision3);
 
         Console.WriteLine();
         Console.WriteLine("Presiona una tecla para salir...");
         Console.ReadKey();
     }
 
-    static void MostrarResultado(NodoRuta resultado, string mensajeSiFalla)
+    static void MostrarMision(Mision mision)
     {
-        if (resultado == null)
+        if (!mision.Exitosa)
         {
             Console.WriteLine("Resultado: Mision Imposible");
-            Console.WriteLine("(" + mensajeSiFalla + ")");
             return;
         }
 
-        Console.WriteLine("Resultado: ruta encontrada");
-        // Reconstruir la ruta subiendo por Padre, y luego invertirla para mostrarla de inicio a fin
-        System.Collections.Generic.List<string> pasos = new System.Collections.Generic.List<string>();
-        NodoRuta actual = resultado;
-        while (actual != null)
+        Console.WriteLine("Resultado: EXITOSA");
+        Console.Write("Ruta (en orden, entrada -> destino): ");
+
+        for (int i = 0; i < mision.RutaResultante.obtenertamano(); i++)
         {
-            pasos.Add("(" + actual.CeldaActual.Fila + "," + actual.CeldaActual.Columna + ")");
-            actual = actual.Padre;
+            Celda c = (Celda)mision.RutaResultante.obtenerporindice(i);
+            Console.Write("(" + c.Fila + "," + c.Columna + ")");
+            if (i < mision.RutaResultante.obtenertamano() - 1)
+                Console.Write(" -> ");
         }
-        pasos.Reverse();
-        Console.WriteLine("Ruta: " + string.Join(" -> ", pasos));
+        Console.WriteLine();
     }
 }

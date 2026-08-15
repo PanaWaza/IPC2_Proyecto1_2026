@@ -1,11 +1,10 @@
 using IPC2_PROYECTO1_2026.Estructuras;
 
-
 namespace IPC2_PROYECTO1_2026.Modelos
 {
     public class BuscadorRutas
     {
-        public static NodoRuta BuscarRuta(MatrizOrtogonal malla, Celda entrada, Celda destino,bool esRescate, int capacidadCombate)
+        public static NodoRuta BuscarRuta(MatrizOrtogonal malla, Celda entrada, Celda destino, Robot robot)
         {
             bool[,] visitado = new bool[malla.TotalFilas, malla.TotalColumnas];
 
@@ -20,7 +19,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
                 if (actual.CeldaActual == destino)
                 {
-                    return actual; // ¡Llegamos! Aquí está la ruta completa (subiendo por Padre)
+                    return actual;  //Llegamos ruta completa , ahora subir a padre
                 }
 
                 ListasDoblementeEnlazada vecinos = malla.ObtenerVecinos(actual.CeldaActual.Fila, actual.CeldaActual.Columna);
@@ -30,11 +29,9 @@ namespace IPC2_PROYECTO1_2026.Modelos
                     Celda vecino = (Celda)vecinos.obtenerporindice(i);
 
                     if (visitado[vecino.Fila, vecino.Columna])
-                        continue; // ya lo exploramos, saltarlo
+                        continue;
 
-                    bool esTransitable = esRescate? vecino.EsTransitableParaRescate(): vecino.EsTransitableParaFighter(capacidadCombate);
-
-                    if (esTransitable)
+                    if (robot.PuedeAtravesar(vecino))
                     {
                         visitado[vecino.Fila, vecino.Columna] = true;
                         cola.encolar(new NodoRuta(vecino, actual));
@@ -42,7 +39,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 }
             }
 
-            return null; // Cola se vació sin llegar al destino -> "Misión Imposible"
+            return null;  // mision imposible
         }
     }
 }
