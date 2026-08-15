@@ -1,12 +1,12 @@
 
 namespace IPC2_PROYECTO1_2026.Estructuras
 {
-    public class ListasDoblementeEnlazada (){
+    public class ListasDoblementeEnlazada {
         public Nodo? Cabeza { set; get;}
         public Nodo? Cola {get; set;}
         public int Tamano {get;set;}
 
-        ListasDoblementeEnlazada(){
+        public ListasDoblementeEnlazada(){
             Cabeza = null;
             Cola = null;
             Tamano = 0;
@@ -16,7 +16,7 @@ namespace IPC2_PROYECTO1_2026.Estructuras
             return Cabeza == null;
         }
 
-        ublic void Agregar(object dato)
+        public void AgregarInicio(object dato)
         {
             Nodo nuevoNodo = new Nodo(dato);
             if (Cabeza == null)
@@ -31,6 +31,23 @@ namespace IPC2_PROYECTO1_2026.Estructuras
                 Cabeza = nuevoNodo;         
             }
             Tamano++; 
+        }
+
+        public void AgregarFinal (object dato)
+        {
+            Nodo actual = new Nodo(dato);
+            if (Cabeza == null)
+            {
+                Cabeza = actual;
+                Cola = actual;
+            }
+            else
+            {
+                actual.Anterior = Cola;
+                Cola.Siguiente = actual;
+                Cola = actual;
+            }
+            Tamano++;
         }
 
         public bool Eliminar(object dato)
@@ -73,17 +90,55 @@ namespace IPC2_PROYECTO1_2026.Estructuras
         return false; 
         }
 
+        public object EliminarFinal()
+        {
+            if (Cola == null)
+                return null; 
+
+            object dato = Cola.Dato;
+
+            if (Cabeza == Cola) 
+            {
+                Cabeza = null;
+                Cola = null;
+            }
+            else
+            {
+                Cola = Cola.Anterior;
+                Cola.Siguiente = null;
+            }
+            Tamano--;
+            return dato;
+        }
+
+        public object EliminarInicio()
+        {
+            if (Cabeza == null)
+                return null;
+
+            object dato = Cabeza.Dato;
+
+            if (Cabeza == Cola) // único elemento
+            {
+                Cabeza = null;
+                Cola = null;
+            }
+            else
+            {
+                Cabeza = Cabeza.Siguiente;
+                Cabeza.Anterior = null;
+            }
+            Tamano--;
+            return dato;
+        }
 
         public object obtenerporindice(int indice){
-            // se devolvera un elemento (objeto) segun el indice
-
-            // indice incorrecto o fuera de rango
-            if (indice<0 || indice >= Tamano)  
+            if (indice < 0 || indice >= Tamano)  
             {
                 return null;
             }
 
-            int contador = 0 ; 
+            int contador = 0; 
             Nodo actual = Cabeza;
 
             while (actual != null)
@@ -95,6 +150,8 @@ namespace IPC2_PROYECTO1_2026.Estructuras
                 actual = actual.Siguiente;
                 contador++;
             }
+
+            return null; 
         }
 
 
@@ -115,7 +172,6 @@ namespace IPC2_PROYECTO1_2026.Estructuras
             }
             return null;
         }
-
 
     }
 
