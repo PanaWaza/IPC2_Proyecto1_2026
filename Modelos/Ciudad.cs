@@ -9,6 +9,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
         public ListasDoblementeEnlazada RecursosDisponibles;
         public ListasDoblementeEnlazada CivilesDisponibles;
+        private ListasDoblementeEnlazada EntradasDisponibles;
         
         public int Filas
         {
@@ -24,6 +25,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
             RecursosDisponibles = new ListasDoblementeEnlazada();
             CivilesDisponibles = new ListasDoblementeEnlazada();
+            EntradasDisponibles = new ListasDoblementeEnlazada();
         }
 
         public void EscanearCeldasEspeciales()
@@ -33,6 +35,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 for(int c =0 ; c < Columnas; c++)
                 {
                     Celda celda = Malla.ObtenerCelda(f,c);
+
                     if(celda.Tipo == TipoCelda.UnidadCivil)
                     {
                         CivilesDisponibles.AgregarFinal(celda);
@@ -40,6 +43,10 @@ namespace IPC2_PROYECTO1_2026.Modelos
                     else if (celda.Tipo == TipoCelda.Recurso)
                     {
                         RecursosDisponibles.AgregarFinal(celda);
+                    }
+                    else if (celda.Tipo == TipoCelda.Entrada)
+                    {
+                        EntradasDisponibles.AgregarFinal(celda);
                     }
                 }
             }
@@ -53,6 +60,11 @@ namespace IPC2_PROYECTO1_2026.Modelos
         public ListasDoblementeEnlazada ObtenerRecursos()
         {
             return RecursosDisponibles;
+        }
+
+        public ListasDoblementeEnlazada ObtenerEntradas()
+        {
+            return EntradasDisponibles;
         }
     }
 }

@@ -21,6 +21,18 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
         public Mision(TipoMision tipo, Ciudad ciudad, Robot robot, Celda entrada, Celda destino)
         {
+            if (entrada.Tipo != Tipocelda.entrada)
+            {
+                throw new ArgumentException("La celda de entrada indicada no es un tipo de entrada valido");
+            }
+
+            Tipocelda tipoEsperado = (tipo == TipoMision.Rescate)? : Tipocelda.UnidadCivil : Tipocelda.Recurso;
+            if (tipo != tipoEsperado)
+            {
+                throw new ArgumentException("La celda de destino no coincide con el tipo de mision");
+            }
+
+
             Tipo = tipo;
             CiudadSeleccionada = ciudad;
             RobotSeleccionado = robot;
@@ -37,7 +49,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
             if (resultado == null)
             {
                 Exitosa = false;
-                return; // Mision Imposible: RutaResultante se queda vacia
+                return; // Mision Imposible , RutaResultante queda vacia
             }
 
             Exitosa = true;
@@ -46,10 +58,10 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
         private ListasDoblementeEnlazada ReconstruirRutaEnOrden(NodoRuta destino)
         {
-            // "destino" viene con .Padre apuntando hacia atras hasta la entrada.
+            // destino viene con .Padre apuntando hacia atras hasta la entrada
             // Si lo agregaramos directo a una lista, quedaria INVERTIDO
-            // (destino, ..., entrada). Necesitamos el orden correcto
-            // (entrada, ..., destino) para mostrarlo.
+            // (destino, ......, entrada). Necesitamos el orden correcto
+            // (entrada, ......., destino) para mostrarlo.
 
             Pila pila = new Pila();
             NodoRuta actual = destino;
@@ -59,7 +71,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 actual = actual.Padre;
             }
 
-            // Ahora la Pila tiene: tope=entrada ... fondo=destino
+            // Ahora la Pila tiene tope=entrada ...... fondo=destino
             // (porque el ultimo que apilamos fue la entrada)
             ListasDoblementeEnlazada ruta = new ListasDoblementeEnlazada();
             while (!pila.estavacia())
@@ -69,5 +81,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
             return ruta;
         }
+
+
     }
 }

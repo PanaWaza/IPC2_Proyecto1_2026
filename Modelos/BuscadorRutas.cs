@@ -6,12 +6,10 @@ namespace IPC2_PROYECTO1_2026.Modelos
     {
         public static NodoRuta BuscarRuta(MatrizOrtogonal malla, Celda entrada, Celda destino, Robot robot)
         {
-            bool[,] visitado = new bool[malla.TotalFilas, malla.TotalColumnas];
-
             Cola cola = new Cola();
             NodoRuta inicio = new NodoRuta(entrada, null);
             cola.encolar(inicio);
-            visitado[entrada.Fila, entrada.Columna] = true;
+            entrada.Visitado = true;   
 
             while (!cola.estavacia())
             {
@@ -19,7 +17,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
                 if (actual.CeldaActual == destino)
                 {
-                    return actual;  //Llegamos ruta completa , ahora subir a padre
+                    return actual;
                 }
 
                 ListasDoblementeEnlazada vecinos = malla.ObtenerVecinos(actual.CeldaActual.Fila, actual.CeldaActual.Columna);
@@ -28,18 +26,18 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 {
                     Celda vecino = (Celda)vecinos.obtenerporindice(i);
 
-                    if (visitado[vecino.Fila, vecino.Columna])
+                    if (vecino.Visitado) 
                         continue;
 
                     if (robot.PuedeAtravesar(vecino))
                     {
-                        visitado[vecino.Fila, vecino.Columna] = true;
+                        vecino.Visitado = true;   
                         cola.encolar(new NodoRuta(vecino, actual));
                     }
                 }
             }
 
-            return null;  // mision imposible
+            return null; // mision imposible
         }
     }
 }

@@ -50,7 +50,9 @@ namespace IPC2_PROYECTO1_2026.Modelos
         public Celda ObtenerCelda(int fila, int columna)
         {
             if (fila < 0 || fila >= TotalFilas || columna < 0 || columna >= TotalColumnas)
+            {
                 return null;
+            }
 
             object filaObj = filas.obtenerporindice(fila);
             ListasDoblementeEnlazada celdasFila = (ListasDoblementeEnlazada)filaObj;
@@ -63,16 +65,34 @@ namespace IPC2_PROYECTO1_2026.Modelos
         {
             ListasDoblementeEnlazada vecinos = new ListasDoblementeEnlazada();
 
-            int[] deltaFila    = { -1, 1, 0, 0 };
-            int[] deltaColumna = { 0, 0, -1, 1 };
+            // creo referencia a vecino y apunto hacia (derecha)
+            
+            Celda vecino = ObtenerCelda(fila , columna + 1);
 
-            for (int i = 0; i < 4; i++)
+            if (vecino != null)
             {
-                Celda vecino = ObtenerCelda(fila + deltaFila[i], columna + deltaColumna[i]);
-                if (vecino != null)
-                {
-                    vecinos.AgregarFinal(vecino);
-                }
+                vecinos.AgregarFinal(vecino);
+            }
+
+            // izquierda
+            vecino = ObtenerCelda(fila,columna - 1);
+            if (vecino != null)
+            {
+                vecinos.AgregarFinal(vecino);
+            }
+
+            // arriba
+            vecino = ObtenerCelda(fila - 1 ,columna);
+            if (vecino != null)
+            {
+                vecinos.AgregarFinal(vecino);
+            }
+
+            // abajo
+            vecino = ObtenerCelda(fila + 1 ,columna);
+            if (vecino != null)
+            {
+                vecinos.AgregarFinal(vecino);
             }
 
             return vecinos;

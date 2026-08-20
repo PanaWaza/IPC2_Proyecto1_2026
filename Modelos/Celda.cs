@@ -16,8 +16,9 @@ namespace IPC2_PROYECTO1_2026.Modelos
         public int Fila { get; set; }
         public int Columna { get; set; }
         public TipoCelda Tipo { get; set; }
+        public bool visitado {get;set;}
 
-        // null = no hay unidad militar en esta celda
+        // null = no hay unidad militar 
         public int? CapacidadUnidadMilitar { get; set; }
 
         public Celda(int fila, int columna, TipoCelda tipo)
@@ -26,6 +27,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
             Columna = columna;
             Tipo = tipo;
             CapacidadUnidadMilitar = null;
+            visitado = false;
         }
 
         public bool TieneUnidadMilitar()
