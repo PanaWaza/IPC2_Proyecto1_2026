@@ -21,13 +21,13 @@ namespace IPC2_PROYECTO1_2026.Modelos
 
         public Mision(TipoMision tipo, Ciudad ciudad, Robot robot, Celda entrada, Celda destino)
         {
-            if (entrada.Tipo != Tipocelda.entrada)
+            if (entrada.Tipo != TipoCelda.Entrada)
             {
                 throw new ArgumentException("La celda de entrada indicada no es un tipo de entrada valido");
             }
 
-            Tipocelda tipoEsperado = (tipo == TipoMision.Rescate)? : Tipocelda.UnidadCivil : Tipocelda.Recurso;
-            if (tipo != tipoEsperado)
+            TipoCelda tipoEsperado = (tipo == TipoMision.Rescate)?  TipoCelda.UnidadCivil : TipoCelda.Recurso;
+            if (destino.Tipo != tipoEsperado)
             {
                 throw new ArgumentException("La celda de destino no coincide con el tipo de mision");
             }

@@ -106,5 +106,17 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 celda.CapacidadUnidadMilitar = capacidad;
             }
         }
+
+        public void ReiniciarVisitados()
+        {
+            for (int f = 0; f < TotalFilas; f++)
+            {
+                for (int c = 0; c < TotalColumnas; c++)
+                {
+                    Celda celda = ObtenerCelda(f, c);
+                    celda.Visitado = false;
+                }
+            }
+        }
     }
 }

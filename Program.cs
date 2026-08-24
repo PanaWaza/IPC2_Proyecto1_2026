@@ -1,84 +1,56 @@
 ﻿using System;
 using IPC2_PROYECTO1_2026.Modelos;
+using IPC2_PROYECTO1_2026.Estructuras;
 
 class Program
 {
     static void Main()
     {
-        // Malla 4 filas x 5 columnas
-        // Fila 0: "E    "
-        // Fila 1: "**** "   <- pared completa, unico hueco en columna 4
-        // Fila 2: "    C"
-        // Fila 3: "   *R"
-        string[] filasTexto = {
-            "E    ",
-            "**** ",
-            "    C",
-            "   *R"
-        };
+        SistemaControl sistema = new SistemaControl();
 
-        Ciudad ciudad = new Ciudad("CiudadPrueba", 4, 5);
-        for (int i = 0; i < filasTexto.Length; i++)
+        string error;
+
+        Console.WriteLine("=== Cargando config_prueba.xml (4x5, F-01 cap 15) ===");
+        bool ok1 = sistema.CargarConfiguracion("config_prueba.xml", out error);
+        Console.WriteLine("Exito: " + ok1 + (ok1 ? "" : (" Error: " + error)));
+        Console.WriteLine("Ciudades: " + sistema.ObtenerCiudades().obtenertamano());
+        Console.WriteLine("Robots: " + sistema.ObtenerRobots().obtenertamano());
+
+        Console.WriteLine();
+        Console.WriteLine("=== Cargando config_prueba2.xml (misma ciudad 2x3, F-01 cap 999) ===");
+        bool ok2 = sistema.CargarConfiguracion("ConfigPrueba2.xml", out error);
+        Console.WriteLine("Exito: " + ok2 + (ok2 ? "" : (" Error: " + error)));
+        Console.WriteLine("Ciudades: " + sistema.ObtenerCiudades().obtenertamano() + " (debe seguir siendo 1, no 2)");
+        Console.WriteLine("Robots: " + sistema.ObtenerRobots().obtenertamano() + " (debe seguir siendo 3, no 4: R-01, F-01 actualizado, F-02)");
+
+        Console.WriteLine();
+        
+        if (sistema.ObtenerCiudades().obtenertamano() > 0)
         {
-            ciudad.Malla.AgregarFila(filasTexto[i], i);
+            Ciudad ciudad = (Ciudad)sistema.ObtenerCiudades().obtenerporindice(0);
+            Console.WriteLine("Ciudad '" + ciudad.Nombre + "' ahora es " + ciudad.Filas + "x" + ciudad.Columnas);
         }
-        ciudad.Malla.AsignarUnidadMilitar(1, 4, 20);
-        ciudad.EscanearCeldasEspeciales();
+        else
+        {
+            Console.WriteLine("No hay ciudades cargadas, no se puede continuar con esta parte de la prueba.");
+        }
 
-        Celda entrada = ciudad.Malla.ObtenerCelda(0, 0);
-        Celda civil   = (Celda)ciudad.ObtenerCiviles().obtenerporindice(0);
-        Celda recurso = (Celda)ciudad.ObtenerRecursos().obtenerporindice(0);
-
-        Console.WriteLine("Civiles encontrados por EscanearCeldasEspeciales: " + ciudad.ObtenerCiviles().obtenertamano());
-        Console.WriteLine("Recursos encontrados por EscanearCeldasEspeciales: " + ciudad.ObtenerRecursos().obtenertamano());
-        Console.WriteLine("Civil en: (" + civil.Fila + "," + civil.Columna + ")");
-        Console.WriteLine("Recurso en: (" + recurso.Fila + "," + recurso.Columna + ")");
-        Console.WriteLine();
-
-        Robot rescue = new ChapinRescue("R-01", 0, 0);
-        Robot fighterDebil = new ChapinFighter("F-01", 0, 0, 15);
-        Robot fighterFuerte = new ChapinFighter("F-02", 0, 0, 100);
-
-        Console.WriteLine("=== MISION 1: Rescate con ChapinRescue ===");
-        Mision mision1 = new Mision(TipoMision.Rescate, ciudad, rescue, entrada, civil);
-        mision1.Ejecutar();
-        MostrarMision(mision1);
+        for (int i = 0; i < sistema.ObtenerRobots().obtenertamano(); i++)
+        {
+            Robot r = (Robot)sistema.ObtenerRobots().obtenerporindice(i);
+            if (r is ChapinFighter f)
+                Console.WriteLine(r.Codigo + " -> ChapinFighter cap=" + f.CapacidadCombate);
+            else
+                Console.WriteLine(r.Codigo + " -> ChapinRescue");
+        }
 
         Console.WriteLine();
-        Console.WriteLine("=== MISION 2: Extraccion con ChapinFighter debil (cap 15) ===");
-        Mision mision2 = new Mision(TipoMision.Extraccion, ciudad, fighterDebil, entrada, recurso);
-        mision2.Ejecutar();
-        MostrarMision(mision2);
-
-        Console.WriteLine();
-        Console.WriteLine("=== MISION 3: Extraccion con ChapinFighter fuerte (cap 100) ===");
-        Mision mision3 = new Mision(TipoMision.Extraccion, ciudad, fighterFuerte, entrada, recurso);
-        mision3.Ejecutar();
-        MostrarMision(mision3);
+        Console.WriteLine("=== Probando manejo de excepciones: archivo que no existe ===");
+        bool ok3 = sistema.CargarConfiguracion("archivo_que_no_existe.xml", out error);
+        Console.WriteLine("Exito: " + ok3 + " | Mensaje: " + error);
 
         Console.WriteLine();
         Console.WriteLine("Presiona una tecla para salir...");
         Console.ReadKey();
-    }
-
-    static void MostrarMision(Mision mision)
-    {
-        if (!mision.Exitosa)
-        {
-            Console.WriteLine("Resultado: Mision Imposible");
-            return;
-        }
-
-        Console.WriteLine("Resultado: EXITOSA");
-        Console.Write("Ruta (en orden, entrada -> destino): ");
-
-        for (int i = 0; i < mision.RutaResultante.obtenertamano(); i++)
-        {
-            Celda c = (Celda)mision.RutaResultante.obtenerporindice(i);
-            Console.Write("(" + c.Fila + "," + c.Columna + ")");
-            if (i < mision.RutaResultante.obtenertamano() - 1)
-                Console.Write(" -> ");
-        }
-        Console.WriteLine();
     }
 }

@@ -6,6 +6,8 @@ namespace IPC2_PROYECTO1_2026.Modelos
     {
         public static NodoRuta BuscarRuta(MatrizOrtogonal malla, Celda entrada, Celda destino, Robot robot)
         {
+            malla.ReiniciarVisitados();
+
             Cola cola = new Cola();
             NodoRuta inicio = new NodoRuta(entrada, null);
             cola.encolar(inicio);

@@ -1,55 +1,96 @@
 using System;
-using System.Xml.Linq;
+using System.Xml;
 using IPC2_PROYECTO1_2026.Estructuras;
 
 namespace IPC2_PROYECTO1_2026.Modelos
 {
-    public class lectorxml
+    public class LectorXml
     {
         public ListasDoblementeEnlazada CargarCiudades(string ruta)
         {
             ListasDoblementeEnlazada ciudades = new ListasDoblementeEnlazada();
 
-            XDocument documento = XDocument.Load(ruta);
-            XElement raiz = documento.Root; // <configuracion>
-            XElement listaCiudades = raiz.Element("listaCiudades");
+            XmlDocument documento = new XmlDocument();
+            documento.Load(ruta);
 
-            foreach (XElement elementoCiudad in listaCiudades.Elements("ciudad"))
+            XmlNode nodoListaCiudades = documento.SelectSingleNode("/configuracion/listaCiudades");
+            if (nodoListaCiudades == null)
+                return ciudades;
+
+            foreach (XmlNode nodoCiudad in nodoListaCiudades.SelectNodes("ciudad"))
             {
-                Ciudad ciudad = ProcesarCiudad(elementoCiudad);
+                Ciudad ciudad = ProcesarCiudad(nodoCiudad);
                 ciudades.AgregarFinal(ciudad);
             }
 
             return ciudades;
         }
 
-        private Ciudad ProcesarCiudad(XElement elementoCiudad)
+        private Ciudad ProcesarCiudad(XmlNode nodoCiudad)
         {
-            XElement elementoNombre = elementoCiudad.Element("nombre");
+            XmlNode nodoNombre = nodoCiudad.SelectSingleNode("nombre");
 
-            string nombreCiudad = elementoNombre.Value;
-            int filas = (int)elementoNombre.Attribute("filas");
-            int columnas = (int)elementoNombre.Attribute("columnas");
+            string nombreCiudad = nodoNombre.InnerText;
+            int filas = int.Parse(nodoNombre.Attributes["filas"].Value);
+            int columnas = int.Parse(nodoNombre.Attributes["columnas"].Value);
 
             Ciudad ciudad = new Ciudad(nombreCiudad, filas, columnas);
 
-            foreach (XElement elementoFila in elementoCiudad.Elements("fila"))
+            foreach (XmlNode nodoFila in nodoCiudad.SelectNodes("fila"))
             {
-                int numeroFila = (int)elementoFila.Attribute("numero");
-                string contenidoFila = LimpiarComillas(elementoFila.Value);
+                int numeroFila = int.Parse(nodoFila.Attributes["numero"].Value);
+                string contenidoFila = LimpiarComillas(nodoFila.InnerText);
                 ciudad.Malla.AgregarFila(contenidoFila, numeroFila);
             }
 
-            foreach (XElement elementoUnidad in elementoCiudad.Elements("unidadMilitar"))
+            foreach (XmlNode nodoUnidad in nodoCiudad.SelectNodes("unidadMilitar"))
             {
-                int fila = (int)elementoUnidad.Attribute("fila");
-                int columna = (int)elementoUnidad.Attribute("columna");
-                int capacidad = (int)elementoUnidad;
+                int fila = int.Parse(nodoUnidad.Attributes["fila"].Value);
+                int columna = int.Parse(nodoUnidad.Attributes["columna"].Value);
+                int capacidad = int.Parse(nodoUnidad.InnerText);
                 ciudad.Malla.AsignarUnidadMilitar(fila, columna, capacidad);
             }
 
             ciudad.EscanearCeldasEspeciales();
             return ciudad;
+        }
+
+        public ListasDoblementeEnlazada CargarRobots(string ruta)
+        {
+            ListasDoblementeEnlazada robots = new ListasDoblementeEnlazada();
+
+            XmlDocument documento = new XmlDocument();
+            documento.Load(ruta);
+
+            XmlNode nodoRobots = documento.SelectSingleNode("/configuracion/robots");
+            if (nodoRobots == null)
+                return robots;
+
+            foreach (XmlNode nodoRobot in nodoRobots.SelectNodes("robot"))
+            {
+                Robot robot = ProcesarRobot(nodoRobot);
+                robots.AgregarFinal(robot);
+            }
+
+            return robots;
+        }
+
+        private Robot ProcesarRobot(XmlNode nodoRobot)
+        {
+            XmlNode nodoNombre = nodoRobot.SelectSingleNode("nombre");
+
+            string codigo = nodoNombre.InnerText;
+            string tipo = nodoNombre.Attributes["tipo"].Value;
+
+            if (tipo == "ChapinFighter")
+            {
+                int capacidad = int.Parse(nodoNombre.Attributes["capacidad"].Value);
+                return new ChapinFighter(codigo, 0, 0, capacidad);
+            }
+            else
+            {
+                return new ChapinRescue(codigo, 0, 0);
+            }
         }
 
         private string LimpiarComillas(string texto)
@@ -60,44 +101,6 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 texto = texto.Substring(1, texto.Length - 2);
             }
             return texto;
-        }
-    }
-
-    public ListasDoblementeEnlazada CargarRobots(string ruta)
-    {
-        ListasDoblementeEnlazada robots = new ListasDoblementeEnlazada();
-
-        XDocument documento = XDocument.Load(ruta);
-        XElement raiz = documento.Root;
-        XElement elementoRobots = raiz.Element("robots");
-
-        if (elementoRobots == null)
-            return robots; // este archivo no trae robots, regresamos lista vacia
-
-        foreach (XElement elementoRobot in elementoRobots.Elements("robot"))
-        {
-            Robot robot = ProcesarRobot(elementoRobot);
-            robots.AgregarFinal(robot);
-        }
-
-        return robots;
-    }
-
-    private Robot ProcesarRobot(XElement elementoRobot)
-    {
-        XElement elementoNombre = elementoRobot.Element("nombre");
-
-        string codigo = elementoNombre.Value;
-        string tipo = (string)elementoNombre.Attribute("tipo");
-
-        if (tipo == "ChapinFighter")
-        {
-            int capacidad = (int)elementoNombre.Attribute("capacidad");
-            return new ChapinFighter(codigo, 0, 0, capacidad);
-        }
-        else // "ChapinRescue"
-        {
-            return new ChapinRescue(codigo, 0, 0);
         }
     }
 }
