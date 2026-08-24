@@ -10,9 +10,14 @@ namespace IPC2_PROYECTO1_2026.Modelos
             CapacidadCombate = capacidadCombate;
         }
 
-        public override bool PuedeAtravesar(Celda celda)
+        public override bool PuedeAtravesar(Celda celda, int capacidadDisponible)
         {
-            return celda.EsTransitableParaFighter(CapacidadCombate);
+            return celda.EsTransitableParaFighter(capacidadDisponible);
+        }
+
+        public override int CapacidadInicial()
+        {
+            return CapacidadCombate;
         }
     }
 }

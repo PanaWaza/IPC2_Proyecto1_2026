@@ -9,9 +9,9 @@ namespace IPC2_PROYECTO1_2026.Modelos
             malla.ReiniciarVisitados();
 
             Cola cola = new Cola();
-            NodoRuta inicio = new NodoRuta(entrada, null);
+            NodoRuta inicio = new NodoRuta(entrada, null, robot.CapacidadInicial());
             cola.encolar(inicio);
-            entrada.Visitado = true;   
+            entrada.Visitado = true;
 
             while (!cola.estavacia())
             {
@@ -28,18 +28,26 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 {
                     Celda vecino = (Celda)vecinos.obtenerporindice(i);
 
-                    if (vecino.Visitado) 
+                    if (vecino.Visitado)
                         continue;
 
-                    if (robot.PuedeAtravesar(vecino))
+                    if (robot.PuedeAtravesar(vecino, actual.CapacidadRestante))
                     {
-                        vecino.Visitado = true;   
-                        cola.encolar(new NodoRuta(vecino, actual));
+                        int capacidadNueva = actual.CapacidadRestante;
+
+                        // Si el vecino tiene unidad militar el robot la derroto ? 
+                        if (vecino.TieneUnidadMilitar())
+                        {
+                            capacidadNueva -= vecino.CapacidadUnidadMilitar.Value;
+                        }
+
+                        vecino.Visitado = true;
+                        cola.encolar(new NodoRuta(vecino, actual, capacidadNueva));
                     }
                 }
             }
 
-            return null; // mision imposible
+            return null;  // mision imposible
         }
     }
 }

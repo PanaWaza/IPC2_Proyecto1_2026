@@ -7,9 +7,14 @@ namespace IPC2_PROYECTO1_2026.Modelos
         {
         }
 
-        public override bool PuedeAtravesar(Celda celda)
+        public override bool PuedeAtravesar(Celda celda, int capacidadDisponible)
         {
             return celda.EsTransitableParaRescate();
+        }
+
+        public override int CapacidadInicial()
+        {
+            return 0;
         }
     }
 }

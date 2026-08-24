@@ -13,7 +13,10 @@ namespace IPC2_PROYECTO1_2026.Modelos
             ColumnaActual = columnaInicial;
         }
 
-        public abstract bool PuedeAtravesar(Celda celda);
-    }
+        public abstract bool PuedeAtravesar(Celda celda, int capacidadDisponible);
 
+        // Capacidad con la que el robot inica cualquier mision.
+        // Para ChapinRescue se deja en 0
+        public abstract int CapacidadInicial();
+    }
 }

@@ -1,14 +1,14 @@
+using System;
 using IPC2_PROYECTO1_2026.Estructuras;
 
 namespace IPC2_PROYECTO1_2026.Modelos
 {
     public class MatrizOrtogonal
     {
-        private ListasDoblementeEnlazada filas; // cada elemento: una ListasDoblementeEnlazada de Celda
+        private ListasDoblementeEnlazada filas;
         public int TotalFilas { get; private set; }
         public int TotalColumnas { get; private set; }
 
-        //  Parte 1 constructor 
         public MatrizOrtogonal(int totalFilas, int totalColumnas)
         {
             TotalFilas = totalFilas;
@@ -16,7 +16,6 @@ namespace IPC2_PROYECTO1_2026.Modelos
             filas = new ListasDoblementeEnlazada();
         }
 
-        // Parte 2 cargar una fila desde el XML 
         public void AgregarFila(string contenidoFila, int numeroFila)
         {
             ListasDoblementeEnlazada celdasFila = new ListasDoblementeEnlazada();
@@ -42,17 +41,26 @@ namespace IPC2_PROYECTO1_2026.Modelos
                 case 'C': return TipoCelda.UnidadCivil;
                 case 'R': return TipoCelda.Recurso;
                 default:
-                    throw new ArgumentException("Carácter no válido en la malla: " + c);
+                    throw new ArgumentException("Caracter no valido en la malla: " + c);
             }
         }
 
-        // Parte 3 Acceso por coordenadas 
+        public void AsignarUnidadMilitar(int fila, int columna, int capacidad)
+        {
+            Celda celda = ObtenerCelda(fila, columna);
+            if (celda != null)
+            {
+                celda.CapacidadUnidadMilitar = capacidad;
+            }
+        }
+
         public Celda ObtenerCelda(int fila, int columna)
         {
             if (fila < 0 || fila >= TotalFilas || columna < 0 || columna >= TotalColumnas)
             {
                 return null;
             }
+                
 
             object filaObj = filas.obtenerporindice(fila);
             ListasDoblementeEnlazada celdasFila = (ListasDoblementeEnlazada)filaObj;
@@ -61,7 +69,7 @@ namespace IPC2_PROYECTO1_2026.Modelos
             return (Celda)celdaObj;
         }
 
-        public ListasDoblementeEnlazada ObtenerVecinos(int fila, int columna)
+         public ListasDoblementeEnlazada ObtenerVecinos(int fila, int columna)
         {
             ListasDoblementeEnlazada vecinos = new ListasDoblementeEnlazada();
 
@@ -96,15 +104,6 @@ namespace IPC2_PROYECTO1_2026.Modelos
             }
 
             return vecinos;
-        }
-
-        public void AsignarUnidadMilitar(int fila, int columna, int capacidad)
-        {
-            Celda celda = ObtenerCelda(fila, columna);
-            if (celda != null)
-            {
-                celda.CapacidadUnidadMilitar = capacidad;
-            }
         }
 
         public void ReiniciarVisitados()

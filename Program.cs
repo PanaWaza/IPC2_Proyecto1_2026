@@ -18,22 +18,14 @@ class Program
 
         Console.WriteLine();
         Console.WriteLine("=== Cargando config_prueba2.xml (misma ciudad 2x3, F-01 cap 999) ===");
-        bool ok2 = sistema.CargarConfiguracion("ConfigPrueba2.xml", out error);
+        bool ok2 = sistema.CargarConfiguracion("config_prueba2.xml", out error);
         Console.WriteLine("Exito: " + ok2 + (ok2 ? "" : (" Error: " + error)));
         Console.WriteLine("Ciudades: " + sistema.ObtenerCiudades().obtenertamano() + " (debe seguir siendo 1, no 2)");
         Console.WriteLine("Robots: " + sistema.ObtenerRobots().obtenertamano() + " (debe seguir siendo 3, no 4: R-01, F-01 actualizado, F-02)");
 
         Console.WriteLine();
-        
-        if (sistema.ObtenerCiudades().obtenertamano() > 0)
-        {
-            Ciudad ciudad = (Ciudad)sistema.ObtenerCiudades().obtenerporindice(0);
-            Console.WriteLine("Ciudad '" + ciudad.Nombre + "' ahora es " + ciudad.Filas + "x" + ciudad.Columnas);
-        }
-        else
-        {
-            Console.WriteLine("No hay ciudades cargadas, no se puede continuar con esta parte de la prueba.");
-        }
+        Ciudad ciudad = (Ciudad)sistema.ObtenerCiudades().obtenerporindice(0);
+        Console.WriteLine("Ciudad '" + ciudad.Nombre + "' ahora es " + ciudad.Filas + "x" + ciudad.Columnas + " (debe ser 2x3, la version nueva)");
 
         for (int i = 0; i < sistema.ObtenerRobots().obtenertamano(); i++)
         {
