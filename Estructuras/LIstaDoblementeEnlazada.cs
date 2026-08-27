@@ -93,9 +93,11 @@ namespace IPC2_PROYECTO1_2026.Estructuras
         public object EliminarFinal()
         {
             if (Cola == null)
+            {
                 return null; 
+            }
 
-            object dato = Cola.Dato;
+            object dato = Cola.Dato;    
 
             if (Cabeza == Cola) 
             {

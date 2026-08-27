@@ -29,8 +29,10 @@ namespace IPC2_PROYECTO1_2026.Modelos
                     Celda vecino = (Celda)vecinos.obtenerporindice(i);
 
                     if (vecino.Visitado)
+                    {
                         continue;
-
+                    }
+                        
                     if (robot.PuedeAtravesar(vecino, actual.CapacidadRestante))
                     {
                         int capacidadNueva = actual.CapacidadRestante;
